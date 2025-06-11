@@ -130,7 +130,7 @@ module Decoder (
                 $display("store");
 
                 //         imm = {20'($signed(instr[31])), instr[31:25], instr[11:7]};
-                o_imm = {i_instr.s_type.imm_11_5[msb] repeat 20, i_instr.s_type.imm_4_0};
+                o_imm = {i_instr.s_type.imm_11_5[msb] repeat 20, i_instr.s_type.imm_11_5, i_instr.s_type.imm_4_0};
 
                 $display("--------  store imm %h", o_imm);
                 //         branch_op = branch_op_t'(funct3);

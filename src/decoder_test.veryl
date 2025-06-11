@@ -30,7 +30,7 @@ embed (inline) sv{{{
         veryl_hippomenes_Decoder decoder(
             i_instr,
 
-            o_imm;
+            o_imm,
             o_csr_addr,
 
             o_rs1,
