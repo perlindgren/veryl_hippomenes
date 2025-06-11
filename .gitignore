@@ -1,0 +1,10 @@
+.build
+/target
+/dependencies
+*.sv
+*.f
+*.map
+*.vcd
+*.bkp
+Veryl.lock
+
