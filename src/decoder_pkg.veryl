@@ -1,0 +1,170 @@
+package DecoderPkg {
+
+    //   typedef enum logic [2:0] {
+    //     ECALL  = 3'b000,
+    //     // EBREAK = 3'b000,
+    //     CSRRW  = 3'b001,
+    //     CSRRS  = 3'b010,
+    //     CSRRC  = 3'b011,
+    //     CSRRWI = 3'b101,
+    //     CSRRSI = 3'b110,
+    //     CSRRCI = 3'b111
+    //   } csr_op_t;
+
+    type Reg  = logic<5> ;
+    type Word = logic<32>;
+
+    // https://riscv.org/wp-content/uploads/2017/05/riscv-spec-v2.2.pdf
+    // table on page 104
+    enum Op: logic<7> {
+        OP_LUI = 'b0110111,
+        OP_AUIPC = 'b0010111,
+        OP_JAL = 'b1101111,
+        OP_JALR = 'b1100111,
+        OP_BRANCH = 'b1100011,
+        OP_LOAD = 'b0000011,
+        OP_STORE = 'b0100011,
+        OP_ALUI = 'b0010011, // OP-IMM
+        OP_ALU = 'b0110011,
+        OP_FENCE = 'b0001111,
+        OP_SYSTEM = 'b1110011,
+    }
+
+    struct RType {
+        funct7: logic<7>,
+        rs2   : Reg     ,
+        rs1   : Reg     ,
+        funct3: logic<3>,
+        rd    : Reg     ,
+        opcode: Op      ,
+    }
+
+    struct IType {
+        imm_11_0: logic<12>,
+        rs1     : Reg      ,
+        funct3  : logic<3> ,
+        rd      : Reg      ,
+        opcode  : Op       ,
+    }
+
+    struct SType {
+        imm_11_5: logic<7>,
+        rs2     : Reg     ,
+        rs1     : Reg     ,
+        funct3  : logic<3>,
+        imm_4_0 : logic<5>,
+        opcode  : Op      ,
+    }
+
+    struct BType {
+        imm_12  : logic   ,
+        imm_10_5: logic<6>,
+        rs2     : Reg     ,
+        rs1     : Reg     ,
+        funct3  : logic<3>,
+        imm_4_1 : logic<4>,
+        imm_11  : logic   ,
+        opcode  : Op      ,
+    }
+
+    struct UType {
+        imm_31_12: logic<20>,
+        rd       : Reg      ,
+        opcode   : Op       ,
+    }
+
+    struct JType {
+        imm_20   : logic<1> ,
+        imm_10_1 : logic<10>,
+        imm_11   : logic    ,
+        imm_19_12: logic<8> ,
+        rd       : Reg      ,
+        opcode   : Op       ,
+    }
+
+    union Instr {
+        i_type: IType,
+        r_type: RType,
+        s_type: SType,
+        b_type: BType,
+        u_type: UType,
+        j_type: JType,
+    }
+
+    enum PcMux: logic<1> {
+        PC_NEXT = 'b0,
+        PC_BRANCH = 'b1,
+    }
+
+    enum PcInterruptMux: logic<1> {
+        PC_NORMAL = 'b0,
+        PC_INTERRUPT = 'b1,
+    }
+
+    enum MulOp: logic<2> {
+        MUL_MUL = 'b00,
+        MUL_MULH = 'b01,
+        MUL_MULHSU = 'b10,
+        MUL_MULHU = 'b11,
+    }
+
+    enum AluOp: logic<3> {
+        ALU_ADD = 3'b000, // ADDI
+        ALU_SLL = 3'b001, // SLLI
+        ALU_SLT = 3'b010, // SLLI
+        ALU_SLTU = 3'b011, // SLTIU
+        ALU_EXOR = 3'b100, // EXORI
+        ALU_SR = 3'b101, // SRL, SRA, SRLI, SRAI
+        ALU_OR = 3'b110, // ORI
+        ALU_AND = 3'b111, // ANDI
+    }
+
+    enum AluAMux: logic<2> {
+        A_IMM = 2'b00,
+        A_RS1 = 2'b01,
+        A_ZERO = 2'b10,
+    }
+
+    enum AluBMux {
+        B_RS2,
+        B_IMM_EXT,
+        B_PC_PLUS_4,
+        B_PC,
+        B_SHAMT,
+    }
+
+    enum BranchOp: logic<3> {
+        BL_BEQ = 'b000,
+        BL_BNE = 'b001,
+        BL_BLT = 'b100,
+        BL_BGE = 'b101,
+        BL_BLTU = 'b110,
+        BL_BGEU = 'b111,
+    }
+
+    enum WbMux {
+        WB_ALU,
+        //    WB_DM,
+        WB_CSR,
+        WB_PC_PLUS_4,
+        WB_MUL,
+    }
+
+    enum MemSel {
+        MEM_DM,
+        MEM_ROM,
+    }
+
+    enum WbMemMux {
+        WB_OTHER,
+        WB_MEM,
+    }
+
+    enum WtMuxSel {
+        WT_RF_OUT,
+        WT_RF_IN,
+        WT_MAGIC,
+
+    }
+
+}

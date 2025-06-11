@@ -1,6 +1,9 @@
 [project]
 name = "veryl_hippomenes"
 version = "0.1.0"
+
 [build]
 source = "src"
-target = {type = "directory", path = "target"}
+target = { type = "directory", path = "target" }
+
+exclude_std = true

@@ -1,5 +1,10 @@
 {
     "cSpell.ignoreWords": [
-        "Veryl"
+        "ALUI",
+        "AUIPC",
+        "Veryl",
+        "endmodule",
+        "funct",
+        "jalr"
     ]
 }

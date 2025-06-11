@@ -1,0 +1,9 @@
+package MemPkg {
+
+    enum MemWidth: logic<2> {
+        BYTE = 'b00,
+        HALFWORD = 'b01,
+        WORD = 'b10,
+    }
+
+}

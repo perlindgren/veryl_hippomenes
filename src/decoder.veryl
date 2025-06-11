@@ -1,0 +1,243 @@
+import DecoderPkg::*;
+import MemPkg::*;
+import ConfigPkg::*;
+
+module Decoder (
+    i_instr: input Instr,
+    // // immediates
+    // output word imm,
+    o_imm     : output Word   ,
+    o_csr_addr: output CsrAddr,
+    // // register file
+    o_rs1: output Reg,
+    o_rs2: output Reg,
+    o_rd : output Reg,
+    // // branch logic
+    // output logic branch_always,
+    // output logic branch_instr,
+    // output branch_op_t branch_op,
+    // // alu
+    // output alu_a_mux_t alu_a_mux_sel,
+    // output alu_b_mux_t alu_b_mux_sel,
+    // output alu_op_t alu_op,
+    // output logic sub_arith,
+    // output mul_op_t mul_op,
+    // // data memory
+    // output logic dmem_write_enable,
+    // output logic dmem_sign_extend,
+    // output mem_width_t dmem_width,
+    // csr
+    o_csr_enable: output logic,
+    // output csr_op_t csr_op,
+    // // write back
+    // output wb_mux_t wb_mux_sel,
+    // output logic wb_write_enable,
+    // output wb_mem_mux_t wb_mem_mux_sel
+) {
+    // R-type
+    // var funct7: logic<7>;
+    // var func3 : logic<3>;
+    // var op    : logic<7>;
+    // var itype: IType;
+
+    always_comb {
+        // splitters
+        o_rs1 = i_instr.r_type.rs1;
+        o_rs2 = i_instr.r_type.rs2;
+        o_rd  = i_instr.i_type.rd;
+
+        o_imm = 0;
+
+        case i_instr.r_type.opcode {
+            Op::OP_LUI: {
+                // UType instruction
+                $display("lui");
+                o_imm    = {i_instr.u_type.imm_31_12, 1'0 repeat 12};
+                //     alu_a_mux_sel = A_ZERO;
+                //     alu_b_mux_sel = B_IMM_EXT;
+                //     alu_op = ALU_OR;
+                //     wb_mux_sel = WB_ALU;
+                //     wb_write_enable = 1;
+            }
+
+            Op::OP_AUIPC: {
+                $display("auipc");
+                o_imm    = {i_instr.u_type.imm_31_12, 1'0 repeat 12}; // 20 bit immediate + pc
+                //         alu_a_mux_sel = A_IMM;
+                //         alu_b_mux_sel = B_PC;
+                //         alu_op = ALU_ADD;
+                //         wb_mux_sel = WB_ALU;
+                //         wb_write_enable = 1;
+            }
+
+            Op::OP_JAL: {
+                $display("jal");
+                //         wb_write_enable = 1;
+                //         imm = {12'($signed(instr[31])), instr[19:12], instr[20], instr[30:21], 1'b0};
+                o_imm    = {i_instr.j_type.imm_20 repeat 12, i_instr.j_type.imm_19_12, i_instr.j_type.imm_11, i_instr.j_type.imm_10_1, 1'0};
+                $display("--------  bl imm %h", o_imm);
+                //         alu_a_mux_sel = A_IMM;
+                //         alu_b_mux_sel = B_PC;
+                //         wb_mux_sel = WB_PC_PLUS_4;
+                //         branch_always = 1;
+            }
+
+            Op::OP_JALR: {
+                $display("jalr");
+                //         wb_write_enable = 1;
+                //         imm = 32'($signed(instr[31:20]));
+                o_imm = {i_instr.i_type.imm_11_0[msb] repeat 20, i_instr.i_type.imm_11_0};
+                //         alu_a_mux_sel = A_RS1;
+                //         alu_b_mux_sel = B_IMM_EXT;
+                //         wb_mux_sel = WB_PC_PLUS_4;
+                //         branch_always = 1;
+            }
+
+            Op::OP_BRANCH: {
+                $display("branch");
+                //         branch_instr = 1;
+                //         wb_write_enable = 0;
+                //        imm = {20'($signed(instr[31])), instr[7], instr[30:25], instr[11:8], 1'b0};
+                o_imm = {i_instr.b_type.imm_12 repeat 20, i_instr.b_type.imm_11, i_instr.b_type.imm_10_5, i_instr.b_type.imm_4_1, 1'0};
+
+                $display("--------  bl imm %h", o_imm);
+                //         branch_op = branch_op_t'(funct3);
+                //         alu_a_mux_sel = A_IMM;
+                //         alu_b_mux_sel = B_PC;
+                //         alu_op = ALU_ADD;
+            }
+
+            Op::OP_LOAD: {
+                $display("load");
+
+                //         imm = {20'($signed(instr[31])), instr[31:20]};
+                o_imm    = {i_instr.i_type.imm_11_0[msb] repeat 20, i_instr.i_type.imm_11_0};
+                $display("--------  load imm %h", o_imm);
+                //         branch_op = branch_op_t'(funct3);
+                //         alu_a_mux_sel = A_RS1;
+                //         alu_b_mux_sel = B_IMM_EXT;
+                //         alu_op = ALU_ADD;
+
+                //         dmem_width = mem_width_t'(funct3[1:0]);
+                //         dmem_sign_extend = !funct3[2];
+
+                //         //wb_mux_sel = WB_DM;
+                //         wb_mem_mux_sel = WB_MEM;
+                //         wb_write_enable = 1;
+            }
+
+            Op::OP_STORE: {
+                $display("store");
+
+                //         imm = {20'($signed(instr[31])), instr[31:25], instr[11:7]};
+                o_imm = {i_instr.s_type.imm_11_5[msb] repeat 20, i_instr.s_type.imm_4_0};
+
+                $display("--------  store imm %h", o_imm);
+                //         branch_op = branch_op_t'(funct3);
+                //         alu_a_mux_sel = A_RS1;
+                //         alu_b_mux_sel = B_IMM_EXT;
+                //         alu_op = ALU_ADD;
+
+                //         dmem_width = mem_width_t'(funct3[1:0]);
+                //         dmem_sign_extend = !funct3[2];
+                //         dmem_write_enable = 1;
+
+                //         //wb_mux_sel = WB_DM;
+                //         wb_write_enable = 0;
+            }
+
+            Op::OP_ALUI: {
+
+                $display("alui");
+                //         imm = 32'($signed(instr[31:20]));
+                o_imm = {i_instr.i_type.imm_11_0[msb] repeat 20, i_instr.i_type.imm_11_0};
+                //         if (funct3 == 'b101) begin
+                //           sub_arith = instr[30]; // SRAI (1) /SRLI (0)?
+                //         end else begin
+                //           sub_arith = 0;
+                //         end
+                //         alu_a_mux_sel = A_RS1;
+                //         alu_b_mux_sel = B_IMM_EXT;
+                //         alu_op = alu_op_t'(funct3);
+                //         wb_mux_sel = WB_ALU;
+                //         wb_write_enable = 1;
+            }
+
+            Op::OP_ALU: {
+
+                //         if (funct7 == 'b0000001) begin
+                //           $display("mul");
+                //           alu_a_mux_sel = A_RS1;
+                //           alu_b_mux_sel = B_RS2;
+                //           mul_op = mul_op_t'(funct3[1:0]);
+                //           wb_mux_sel = WB_MUL;
+                //           wb_write_enable = 1;
+                //         end else begin
+                //           $display("alu");
+                //           // imm = 32'($signed(instr[31:20]));
+                //           sub_arith = instr[30];
+                //           alu_a_mux_sel = A_RS1;
+                //           alu_b_mux_sel = B_RS2;
+                //           alu_op = alu_op_t'(funct3);
+                //           wb_mux_sel = WB_ALU;
+                //           wb_write_enable = 1;
+                //         end
+            }
+
+            Op::OP_FENCE: {
+                $display("fence");
+            }
+
+            Op::OP_SYSTEM: {
+                $display("system");
+
+                //         wb_write_enable = 1;
+                //         wb_mux_sel = WB_CSR;
+                //         csr_enable = 1;
+                //         csr_op = csr_op_t'(funct3);
+            }
+
+            default: {
+                $display("-- non matched op --");
+            }
+        }
+
+    }
+}
+
+//   always @instr begin
+
+//     $display();  // new line
+//     $display("inst %h, rs2 %b, rs1 %b, rd %b, opcode %b", instr, rs2, rs1, rd, op);
+
+//     // TODO, separate imm fields?
+//     // imm
+//     imm = 0;
+//     // branch logic
+//     branch_op = BL_BEQ;
+//     branch_instr = 0;  // set only for branch logic operation
+//     branch_always = 0;  // set only for jal/jalr
+//     // alu
+//     alu_a_mux_sel = A_ZERO;
+//     alu_b_mux_sel = B_IMM_EXT;
+//     alu_op = ALU_ADD;
+//     sub_arith = 0;
+//     mul_op = MUL_MULHSU;
+//     // data memory
+//     dmem_write_enable = 0;
+//     dmem_sign_extend = 0;
+//     dmem_width = WORD;
+//     // csr
+//     csr_enable = 0;
+//     csr_op = CSRRW;
+//     // write back
+//     wb_mux_sel = WB_ALU;
+//     wb_write_enable = 0;  // set only for instructions writing to rf
+//     wb_mem_mux_sel = WB_OTHER;
+
+//     // {imm_20, imm_10_1, imm_11j, imm_19_12} = instruction[31:12];
+//
+
+//   end
+
+// endmodule
