@@ -20,6 +20,9 @@ embed (inline) sv{{{
         Reg o_rd;
         
         logic o_csr_enable;
+        AluAMux o_alu_a_mux_sel;
+        AluBMux o_alu_b_mux_sel;
+        AluOp o_alu_op;        
         // logic [4:0] i_b_addr;
         // logic i_w_ena;
         // logic [4:0] i_w_addr;
@@ -36,6 +39,10 @@ embed (inline) sv{{{
             o_rs1,
             o_rs2,
             o_rd,
+
+            o_alu_a_mux_sel,
+            o_alu_b_mux_sel,
+            o_alu_op,
 
             o_csr_enable 
         //     i_command,
