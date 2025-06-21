@@ -11,10 +11,15 @@ MEMORY
     using OVERLAY but seems not to be working in LLVM (LLD) 
   */
   RAM : ORIGIN = 0x80000000, LENGTH = 1K
-} ENTRY(Reset)
+} ENTRY(Reset) 
 
 SECTIONS
 {
+  .reset :
+  {
+    *(.reset);
+  } > CODE
+
   .text :
   {
     *(.text .text.*);
@@ -23,5 +28,10 @@ SECTIONS
   .rodata :
   {
     *(.rodata .rodata.*);
+  } > RAM
+
+  .data :
+  {
+    *(.data .data.*);
   } > RAM
 }

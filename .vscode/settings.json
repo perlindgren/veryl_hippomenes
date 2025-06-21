@@ -5,6 +5,7 @@
         "Veryl",
         "endmodule",
         "funct",
-        "jalr"
+        "jalr",
+        "mret"
     ]
 }

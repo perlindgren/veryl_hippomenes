@@ -3,6 +3,7 @@
         "Tlink",
         "Tmemory",
         "addi",
+        "mret",
         "noreturn",
         "riscv",
         "rodata",
