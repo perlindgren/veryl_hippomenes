@@ -1,12 +1,16 @@
 {
     "cSpell.ignoreWords": [
+        "RTIC",
         "Tlink",
         "Tmemory",
         "addi",
+        "littleriscv",
         "mret",
         "noreturn",
+        "objdump",
         "riscv",
         "rodata",
-        "rustflags"
+        "rustflags",
+        "veryl"
     ]
 }

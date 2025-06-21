@@ -1,11 +1,4 @@
 [build]
 target = "riscv32i-unknown-none-elf"
 
-rustflags = [
-    "-C",
-    "link-arg=-Tlink.x",
-    # "-C",
-    # "link-arg=-no_start_files",
-    # "-C",
-    # "modifiers=+verbatim",
-]
+rustflags = ["-C", "link-arg=-Tlink.x"]

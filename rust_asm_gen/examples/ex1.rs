@@ -6,13 +6,13 @@ use core::arch::asm;
 use panic_halt as _;
 
 #[unsafe(no_mangle)]
+#[unsafe(link_section = ".reset")]
 pub extern "C" fn Reset() -> ! {
     unsafe {
         asm!(
-            "lui x1, 0x12345", // 20 bit
-            "add x1, x2, x3",
-            "addi x1, x2, 0xff",
-            "jal 0x1234"
+            "lui a0, 0x12345", // 20 bit
+            "add a0, a0, a0",
+            "addi a0, a0, 0xff",
         );
     }
 

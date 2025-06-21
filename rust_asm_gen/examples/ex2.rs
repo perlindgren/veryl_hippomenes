@@ -13,14 +13,14 @@ use panic_halt as _;
 #[unsafe(no_mangle)]
 pub static mut INT_HANDLERS: [u32; 2] = [0; 2];
 
-// our trampoline
+// application specific generated trampoline
 #[unsafe(no_mangle)]
 #[unsafe(naked)]
 unsafe extern "C" fn trampoline() {
     naked_asm!("jal bar", "mret",);
 }
 
-// emulates the main entry point
+// emulates the application specific generated entry point
 #[unsafe(no_mangle)]
 #[unsafe(link_section = ".reset")]
 pub extern "C" fn Reset() -> ! {
