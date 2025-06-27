@@ -4,6 +4,7 @@
         "Tlink",
         "Tmemory",
         "addi",
+        "addiu",
         "littleriscv",
         "mret",
         "noreturn",
@@ -11,6 +12,7 @@
         "riscv",
         "rodata",
         "rustflags",
+        "rustup",
         "veryl"
     ]
 }

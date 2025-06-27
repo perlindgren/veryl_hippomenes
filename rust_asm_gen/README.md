@@ -1,5 +1,22 @@
 # Rust Asm Gen
 
+## Prerequisites
+
+- Latest Rust toolchain.
+- The `riscv32i-unknown-none-elf` target for RV32I:
+
+  ```shell
+  rustup target add riscv32i-unknown-none-elf
+  ```
+
+- The `llvm-tools-preview` (for `cargo nm`/`objdump` etc.)
+
+  ```shell
+  rustup component add llvm-tools-preview
+  ```
+
+## Rust code generation
+
 Rust allows for highly optimized code based on aggressive optimizations performed by LLVM and linker backend passes. The aggressive optimization removes all unreachable code and data, thus we have to make sure that LLVM is correctly able to identify the entry point, and from there span reachable code and data.
 
 For sake of completeness we provide a self contained build and linking environment as follows:
@@ -157,7 +174,3 @@ fn baz() {
     black_box(r);
 }
 ```
-
-
-
-
