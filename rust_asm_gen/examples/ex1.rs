@@ -7,7 +7,7 @@ use panic_halt as _;
 
 #[unsafe(no_mangle)]
 #[unsafe(link_section = ".reset")]
-pub extern "C" fn Reset() -> ! {
+fn reset() -> ! {
     unsafe {
         asm!(
             "lui a0, 0x12345", // 20 bit

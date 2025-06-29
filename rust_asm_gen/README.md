@@ -136,7 +136,7 @@ use panic_halt as _;
 
 // emulate interrupt vector table
 #[unsafe(no_mangle)]
-pub static mut INT_HANDLERS: [u32; 2] = [0; 2];
+pub static mut INT_VEC: [u32; 2] = [0; 2];
 
 // application specific generated trampoline
 #[unsafe(no_mangle)]
@@ -151,7 +151,7 @@ unsafe extern "C" fn trampoline() {
 pub extern "C" fn Reset() -> ! {
     // emulate interrupt table configuration
     unsafe {
-        INT_HANDLERS[0] = trampoline as *const u32 as u32;
+        INT_VEC[0] = trampoline as *const u32 as u32;
     };
 
     loop {}

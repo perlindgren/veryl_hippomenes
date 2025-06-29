@@ -11,7 +11,7 @@ MEMORY
     using OVERLAY but seems not to be working in LLVM (LLD) 
   */
   RAM : ORIGIN = 0x00010000, LENGTH = 1K
-} ENTRY(Reset) 
+} ENTRY(reset) 
 
 SECTIONS
 {
